@@ -29,6 +29,9 @@ export async function POST(request: Request) {
     if (error instanceof Anthropic.AuthenticationError) {
       return Response.json({ error: "API-Key fehlt oder ist ungültig." }, { status: 500 });
     }
+    if (error instanceof Anthropic.BadRequestError && /credit balance/i.test(error.message)) {
+      return Response.json({ error: "Anthropic-Guthaben aufgebraucht – bitte unter Plans & Billing aufladen." }, { status: 402 });
+    }
     console.error(error);
     return Response.json({ error: "Erkennung fehlgeschlagen." }, { status: 500 });
   }
